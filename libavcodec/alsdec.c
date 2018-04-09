@@ -1768,7 +1768,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame_ptr,
     // For the first frame, if prediction is used, all samples used from the
     // previous frame are assumed to be zero.
     ra_frame = sconf->ra_distance && !(ctx->frame_id % sconf->ra_distance);
-
+    int64_t residue = (int64_t)sconf->samples - (int64_t)ctx->frame_id * (int64_t)sconf->frame_length;
+    if(residue <= 0) return AVERROR_EOF;
     // the last frame to decode might have a different length
     if (sconf->samples != 0xFFFFFFFF)
         ctx->cur_frame_length = FFMIN(sconf->samples - ctx->frame_id * (uint64_t) sconf->frame_length,
